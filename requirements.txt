@@ -1,0 +1,2 @@
+Django>=1.4
+django-jquery-js>=1.9.1
