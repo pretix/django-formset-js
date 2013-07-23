@@ -6,11 +6,12 @@ A wrapper for a JavaScript formset helper.
 Installing
 ----------
 
-Install via pip:
+Install via pip::
 
     pip install django-formset-js
 
-Then add it and its dependancies `django-jquery-js` to your `INSTALLED_APPS`:
+Then add it and its dependancies ``django-jquery-js``
+to your ``INSTALLED_APPS``::
 
     INSTALLED_APPS += (
         'django.contrib.staticfiles',
@@ -21,8 +22,8 @@ Then add it and its dependancies `django-jquery-js` to your `INSTALLED_APPS`:
 Using
 -----
 
-Include the `djangoformsetjs.utils.formset_media_js` files in your form Media,
-and render it on the page:
+Include the ``djangoformsetjs.utils.formset_media_js`` files in your form Media,
+and render it on the page::
 
     from djangoformsetsjs.utils import formset_media_js
 
@@ -34,19 +35,20 @@ and render it on the page:
 
     MyFormSet = formset_factory(MyForm)
 
-Alternatively, simply add the script tag:
-
-    <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
-
-To activate it in the page, you must include the Media of the form:
+To activate it in the page, you must include the Media of the form::
 
     {% block extra_script %}
         {{ form.media }}
     {% endblock %}
 
-Then render your formset. Certain blocks of your formset need to be marked up
-so the formset library can find them. Note the `data-formset-...` attributes in
-the code below:
+Alternatively, simply add the script tag::
+
+    <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
+
+Then render your formset.
+Certain blocks of your formset need to be marked up
+so the formset library can find them.
+Note the ``data-formset-...`` attributes in the code below::
 
     {% load formset_tags %}
 
@@ -85,24 +87,34 @@ the code below:
 
 The data attributes are as follows:
 
-* `data-formset-prefix`: The value of `{{ formset.prefix }}`. This is used
-  to find the management form.
-* `data-formset-body`: This indicates where all the child forms are. New forms
-  are inserted in here.
-* `data-formset-empty-form`: The element that contains the empty form template.
-  For best results, use a `<script>` tag.
-* `data-formset-add`: A button that adds a new form.
-* `data-formset-delete-button`: A button that deletes that form.
+``data-formset-prefix``
+  The value of ``{{ formset.prefix }}``.
+  This is used to find the management form.
 
-The empty form template is wrapped in a `<script>` to stop any JavaScript
-attached to widgets from running upon page load, and to make finding and
-replacing the `__prefix__` placeholder easier. The contents of the `<script>`
-should be wrapped in a `{% escapescript %}` block to prevent any script tags
-inside from closing the wrapping script tag prematurely.
+``data-formset-body``
+  This indicates where all the child forms are.
+  New forms are inserted in here.
 
-If the forms can be deleted, and contain a delete button, the forms will be
-hidden from view when deleted. The `DELETE` field should be hidden if the
-delete button is used:
+``data-formset-empty-form``
+  The element that contains the empty form template.
+  For best results, use a ``<script>`` tag.
+
+``data-formset-add``
+  A button that adds a new form.
+
+``data-formset-delete-button``
+  A button that deletes that form.
+
+The empty form template is wrapped in a ``<script>``
+to stop any JavaScript attached to widgets from running upon page load,
+and to make finding and replacing the ``__prefix__`` placeholder easier.
+The contents of the ``<script>`` should be wrapped in a ``{% escapescript %}`` block
+to prevent any script tags inside from closing the wrapping script tag prematurely.
+
+If the forms can be deleted, and contain a delete button,
+the forms will be hidden from view when deleted.
+The ``DELETE`` field should be hidden if the delete button is used.
+The delete button is identified by the ``data-formset-delete-button`` attribute::
 
     {% for form in formset %}
         <div data-formset-form>

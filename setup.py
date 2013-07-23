@@ -5,6 +5,9 @@ Install django-formset-js using setuptools
 
 from djangoformsetjs import __version__
 
+with open('README') as f:
+    readme = f.read()
+
 try:
     from setuptools import setup, find_packages
 except ImportError:
@@ -16,6 +19,7 @@ setup(
     name='django-formset-js',
     version=__version__,
     description='Extend Django formsets with JavaScript',
+    long_description=readme,
     author='Ionata Web Solutions',
     author_email='webmaster@ionata.com.au',
     url='https://bitbucket.org/ionata/django-formset-js',
