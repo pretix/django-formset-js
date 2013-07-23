@@ -6,64 +6,86 @@
 
     var pluginName = 'formset';
 
-    //Show dates in one format, submit in another
+    /**
+    * Wraps up a formset, allowing adding, and removing forms
+    */
     var Formset = function(el, options) {
         var _this = this;
 
         //Defaults:
-        this.defaults = {
-            emptyForm: '[data-formset-empty-form]',
-            body: '[data-formset-body]',
-            add: '[data-formset-add]'
-        };
-        //Extending options:
-        this.opts = $.extend({}, this.defaults, options);
+        this.opts = $.extend({}, Formset.defaults, options);
 
         this.$formset = $(el);
         this.$emptyForm = this.$formset.find(this.opts.emptyForm);
         this.$body = this.$formset.find(this.opts.body);
         this.$add = this.$formset.find(this.opts.add);
 
-        this.addForm = (function(addForm) {
-            return function() { return addForm.apply(_this, arguments); };
-        })(this.addForm);
+        this.formsetPrefix = $(el).data('formset-prefix');
 
+        // Bind to the `Add form` button
+        this.addForm = $.proxy(this, 'addForm');
         this.$add.click(this.addForm);
 
-        // Store a reference to this in the elements
+        // Set up the existing forms
+        this.$body.find(this.opts.form).each(function(i, form) {
+            var $form = $(form);
+            _this.bindForm($(this), i);
+        });
+
+        // Store a reference to this in the formset element
         this.$formset.data(pluginName, this);
     };
 
-    Formset.prototype.addForm = function() {
-        var attrs = ['name', 'id', 'for'];
-        var selector = $.map(attrs, function(val) {
-            return '[' + val + '*=__prefix__]';
-        }).join(',');
-
-        var count = this.formCount();
-        this.formCount(count + 1);
-
-        var $newForm = this.$emptyForm.clone();
-        var $els = $newForm.find(selector);
-
-        $els.each(function(i, el) {
-            var $el = $(el);
-            $.each(attrs, function(i, attrName) {
-                var attr = $el.attr(attrName);
-                if (!attr) return;
-                $el.attr(attrName, attr.replace('__prefix__', count));
-            });
-        });
-
-
-        this.$body.append($newForm);
-
-        return $newForm;
+    Formset.defaults = {
+        form: '[data-formset-form]',
+        emptyForm: 'script[type=form-template][data-formset-empty-form]',
+        body: '[data-formset-body]',
+        add: '[data-formset-add]',
+        deleteButton: '[data-formset-delete-button]'
 
     };
 
+    Formset.prototype.addForm = function() {
+        var newIndex = this.formCount();
+        this.formCount(newIndex + 1);
+
+        var newFormHtml = this.$emptyForm.html()
+            .replace(new RegExp('__prefix__', 'g'), newIndex)
+            .replace(new RegExp('<\\\\/script>', 'g'), '</script>');
+
+        var $newForm = $(newFormHtml);
+        this.$body.append($newForm);
+        this.bindForm($newForm, newIndex);
+        $newForm.slideUp(0);
+        $newForm.slideDown();
+
+        return $newForm;
+    };
+
+    /**
+    * Attach any events needed to a new form
+    */
+    Formset.prototype.bindForm = function($form, index) {
+        var prefix = this.formsetPrefix + '-' + index;
+        $form.data(pluginName + '__formPrefix', prefix);
+
+        var $delete = $form.find('[name=' + prefix + '-DELETE]');
+        var $deleteButton = $form.find(this.opts.deleteButton);
+
+        if ($deleteButton.length) {
+            $deleteButton.bind('click', function() {
+                $form.slideUp();
+                $delete.attr('checked', true);
+            });
+
+            if ($delete.is(':checked')) {
+                $form.slideUp(0);
+            }
+        }
+    };
+
     Formset.prototype.managementForm = function(name) {
-        return this.$formset.find('[name=' + this.$formset.data('formset-prefix') + '-' + name + ']');
+        return this.$formset.find('[name=' + this.formsetPrefix + '-' + name + ']');
     };
 
     Formset.prototype.formCount = function() {
