@@ -48,25 +48,68 @@ Then render your formset. Certain blocks of your formset need to be marked up
 so the formset library can find them. Note the `data-formset-...` attributes in
 the code below:
 
-    <div data-formset-wrapper data-formset-prefix="{{ formset.prefix }}">
+    {% load formset_tags %}
+
+    <div id="#formset" data-formset-prefix="{{ formset.prefix }}">
+        {{ formset.management_form }}
 
         <div data-formset-body>
             <!-- New forms will be inserted in here -->
-            {% for form in formset %} {{ form }} {% endfor %}
+            {% for form in formset %}
+                <div data-formset-form>
+                    {{ form }}
+                    <a data-formset-delete-button>Delete form</a>
+                </div>
+            {% endfor %}
         </div>
 
-        <div style="display: none">
-            <div data-formset-empty>
-                <!-- This element will be cloned for new forms inserted -->
-                {{ formset.empty_form }}
-            </div>
-        </div>
+        <!-- The empty form template. By wrapping this in a <script> tag, the
+        __prefix__ placeholder can easily be replaced in both attributes and
+        any scripts -->
+        <script type="form-template" data-formset-empty-form>
+            {% escapescript %}
+                <div data-formset-form>
+                    {{ formset.empty_form }}
+                </div>
+            {% escapescript %}
+        </script>
 
         <!-- This button will add a new form when clicked -->
         <input type="button" value="Add another" data-formset-add>
 
         <script>jQuery(function($) {
-            $("[data-formset-wrapper]").formset();
+            $("#formset").formset();
         });</script>
 
     </div>
+
+The data attributes are as follows:
+
+* `data-formset-prefix`: The value of `{{ formset.prefix }}`. This is used
+  to find the management form.
+* `data-formset-body`: This indicates where all the child forms are. New forms
+  are inserted in here.
+* `data-formset-empty-form`: The element that contains the empty form template.
+  For best results, use a `<script>` tag.
+* `data-formset-add`: A button that adds a new form.
+* `data-formset-delete-button`: A button that deletes that form.
+
+The empty form template is wrapped in a `<script>` to stop any JavaScript
+attached to widgets from running upon page load, and to make finding and
+replacing the `__prefix__` placeholder easier. The contents of the `<script>`
+should be wrapped in a `{% escapescript %}` block to prevent any script tags
+inside from closing the wrapping script tag prematurely.
+
+If the forms can be deleted, and contain a delete button, the forms will be
+hidden from view when deleted. The `DELETE` field should be hidden if the
+delete button is used:
+
+    {% for form in formset %}
+        <div data-formset-form>
+            {{ form.name }}
+            {{ form.age }}
+
+            <div class="hidden">{{ form.DELETE }}</div>
+            <a data-formset-delete-button>Delete form</a>
+        </div>
+    {% endfor %}
