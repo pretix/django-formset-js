@@ -46,8 +46,8 @@
     };
 
     Formset.prototype.addForm = function() {
-        var newIndex = this.formCount();
-        this.formCount(newIndex + 1);
+        var newIndex = this.totalFormCount();
+        this.managementForm('TOTAL_FORMS').val(newIndex + 1);
 
         var newFormHtml = this.$emptyForm.html()
             .replace(new RegExp('__prefix__', 'g'), newIndex)
@@ -88,15 +88,8 @@
         return this.$formset.find('[name=' + this.formsetPrefix + '-' + name + ']');
     };
 
-    Formset.prototype.formCount = function() {
-        var $totalForms = this.managementForm('TOTAL_FORMS');
-
-        if (arguments.length) {
-            $totalForms.val(arguments[0]);
-            return this;
-        } else {
-            return parseInt($totalForms.val(), 10) || 0;
-        }
+    Formset.prototype.totalFormCount = function() {
+        return this.$body.find(this.opts.form).length;
     };
 
     Formset.getOrCreate = function(el, options) {
