@@ -92,6 +92,15 @@
         return this.$body.find(this.opts.form).length;
     };
 
+    Formset.prototype.deletedFormCount = function() {
+        var deletedSelector = '[name^="' + this.formsetPrefix + '-"][name$="-DELETE"]:checked';
+        return this.$body.find(this.opts.form + ' ' + deletedSelector).length;
+    };
+
+    Formset.prototype.activeFormCount = function() {
+        return this.totalFormCount() - this.deletedFormCount();
+    };
+
     Formset.getOrCreate = function(el, options) {
         var rev = $(el).data(pluginName);
         if (!rev) {
