@@ -26,6 +26,9 @@
         this.addForm = $.proxy(this, 'addForm');
         this.$add.click(this.addForm);
 
+        // Bind receiver to `formAdded` and `formDeleted` events
+        this.$formset.on('formAdded formDeleted', this.opts.form, $.proxy(this, 'checkMaxForms'));
+
         // Set up the existing forms
         this.$body.find(this.opts.form).each(function(i, form) {
             var $form = $(form);
@@ -41,13 +44,19 @@
         emptyForm: 'script[type=form-template][data-formset-empty-form]',
         body: '[data-formset-body]',
         add: '[data-formset-add]',
-        deleteButton: '[data-formset-delete-button]'
+        deleteButton: '[data-formset-delete-button]',
+        hasMaxFormsClass: 'has-max-forms'
 
     };
 
     Formset.prototype.addForm = function() {
-        var newIndex = this.formCount();
-        this.formCount(newIndex + 1);
+        // Don't proceed if the number of maximum forms has been reached
+        if (this.hasMaxForms()) {
+            throw new Error("MAX_NUM_FORMS reached");
+        }
+
+        var newIndex = this.totalFormCount();
+        this.managementForm('TOTAL_FORMS').val(newIndex + 1);
 
         var newFormHtml = this.$emptyForm.html()
             .replace(new RegExp('__prefix__', 'g'), newIndex)
@@ -58,6 +67,7 @@
         this.bindForm($newForm, newIndex);
         $newForm.slideUp(0);
         $newForm.slideDown();
+        $newForm.trigger('formAdded');
 
         return $newForm;
     };
@@ -70,12 +80,22 @@
         $form.data(pluginName + '__formPrefix', prefix);
 
         var $delete = $form.find('[name=' + prefix + '-DELETE]');
+
+        // Trigger `formAdded` / `formDeleted` events when delete checkbox value changes
+        $delete.change(function(event) {
+            if ($delete.is(':checked')) {
+                $form.trigger('formDeleted');
+            } else {
+                $form.trigger('formAdded');
+            }
+        });
+
         var $deleteButton = $form.find(this.opts.deleteButton);
 
         if ($deleteButton.length) {
             $deleteButton.bind('click', function() {
                 $form.slideUp();
-                $delete.attr('checked', true);
+                $delete.attr('checked', true).change();
             });
 
             if ($delete.is(':checked')) {
@@ -88,14 +108,31 @@
         return this.$formset.find('[name=' + this.formsetPrefix + '-' + name + ']');
     };
 
-    Formset.prototype.formCount = function() {
-        var $totalForms = this.managementForm('TOTAL_FORMS');
+    Formset.prototype.totalFormCount = function() {
+        return this.$body.find(this.opts.form).length;
+    };
 
-        if (arguments.length) {
-            $totalForms.val(arguments[0]);
-            return this;
+    Formset.prototype.deletedFormCount = function() {
+        var deletedSelector = '[name^="' + this.formsetPrefix + '-"][name$="-DELETE"]:checked';
+        return this.$body.find(this.opts.form).find(deletedSelector).length;
+    };
+
+    Formset.prototype.activeFormCount = function() {
+        return this.totalFormCount() - this.deletedFormCount();
+    };
+
+    Formset.prototype.hasMaxForms = function() {
+        var maxForms = parseInt(this.managementForm('MAX_NUM_FORMS').val(), 10) || 1000;
+        return this.activeFormCount() >= maxForms;
+    };
+
+    Formset.prototype.checkMaxForms = function() {
+        if (this.hasMaxForms()) {
+            this.$formset.addClass(this.opts.hasMaxFormsClass);
+            this.$add.attr('disabled', 'disabled');
         } else {
-            return parseInt($totalForms.val(), 10) || 0;
+            this.$formset.removeClass(this.opts.hasMaxFormsClass);
+            this.$add.removeAttr('disabled');
         }
     };
 
