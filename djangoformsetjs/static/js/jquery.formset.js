@@ -94,11 +94,16 @@
 
     Formset.prototype.deletedFormCount = function() {
         var deletedSelector = '[name^="' + this.formsetPrefix + '-"][name$="-DELETE"]:checked';
-        return this.$body.find(this.opts.form + ' ' + deletedSelector).length;
+        return this.$body.find(this.opts.form).find(deletedSelector).length;
     };
 
     Formset.prototype.activeFormCount = function() {
         return this.totalFormCount() - this.deletedFormCount();
+    };
+
+    Formset.prototype.hasMaxForms = function() {
+        var maxForms = parseInt(this.managementForm('MAX_NUM_FORMS').val(), 10) || 1000;
+        return this.activeFormCount() >= maxForms
     };
 
     Formset.getOrCreate = function(el, options) {
