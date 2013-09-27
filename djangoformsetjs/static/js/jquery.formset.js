@@ -80,13 +80,22 @@
         $form.data(pluginName + '__formPrefix', prefix);
 
         var $delete = $form.find('[name=' + prefix + '-DELETE]');
+
+        // Trigger `formAdded` / `formDeleted` events when delete checkbox value changes
+        $delete.change(function(event) {
+            if ($delete.is(':checked')) {
+                $form.trigger('formDeleted');
+            } else {
+                $form.trigger('formAdded');
+            }
+        });
+
         var $deleteButton = $form.find(this.opts.deleteButton);
 
         if ($deleteButton.length) {
             $deleteButton.bind('click', function() {
                 $form.slideUp();
-                $delete.attr('checked', true);
-                $form.trigger('formDeleted');
+                $delete.attr('checked', true).change();
             });
 
             if ($delete.is(':checked')) {
