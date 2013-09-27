@@ -45,16 +45,14 @@
         body: '[data-formset-body]',
         add: '[data-formset-add]',
         deleteButton: '[data-formset-delete-button]',
-        hasMaxFormsClass: 'has-max-forms',
-        hasMaxFormsMessage: 'The number of maximum forms has been reached.'
+        hasMaxFormsClass: 'has-max-forms'
 
     };
 
     Formset.prototype.addForm = function() {
         // Don't proceed if the number of maximum forms has been reached
         if (this.hasMaxForms()) {
-            alert(this.opts.hasMaxFormsMessage);
-            return;
+            throw new Error("MAX_NUM_FORMS reached");
         }
 
         var newIndex = this.totalFormCount();
