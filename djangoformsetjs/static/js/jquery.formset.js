@@ -116,7 +116,7 @@
 
     Formset.prototype.hasMaxForms = function() {
         var maxForms = parseInt(this.managementForm('MAX_NUM_FORMS').val(), 10) || 1000;
-        return this.activeFormCount() >= maxForms
+        return this.activeFormCount() >= maxForms;
     };
 
     Formset.prototype.checkMaxForms = function() {
