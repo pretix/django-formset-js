@@ -26,6 +26,9 @@
         this.addForm = $.proxy(this, 'addForm');
         this.$add.click(this.addForm);
 
+        // Bind receiver to `formAdded` and `formDeleted` events
+        this.$formset.on('formAdded formDeleted', this.opts.form, $.proxy(this, 'checkMaxForms'));
+
         // Set up the existing forms
         this.$body.find(this.opts.form).each(function(i, form) {
             var $form = $(form);
@@ -41,11 +44,19 @@
         emptyForm: 'script[type=form-template][data-formset-empty-form]',
         body: '[data-formset-body]',
         add: '[data-formset-add]',
-        deleteButton: '[data-formset-delete-button]'
+        deleteButton: '[data-formset-delete-button]',
+        hasMaxFormsClass: 'has-max-forms',
+        hasMaxFormsMessage: 'The number of maximum forms has been reached.'
 
     };
 
     Formset.prototype.addForm = function() {
+        // Don't proceed if the number of maximum forms has been reached
+        if (this.hasMaxForms()) {
+            alert(this.opts.hasMaxFormsMessage);
+            return;
+        }
+
         var newIndex = this.totalFormCount();
         this.managementForm('TOTAL_FORMS').val(newIndex + 1);
 
@@ -58,6 +69,7 @@
         this.bindForm($newForm, newIndex);
         $newForm.slideUp(0);
         $newForm.slideDown();
+        $newForm.trigger('formAdded');
 
         return $newForm;
     };
@@ -76,6 +88,7 @@
             $deleteButton.bind('click', function() {
                 $form.slideUp();
                 $delete.attr('checked', true);
+                $form.trigger('formDeleted');
             });
 
             if ($delete.is(':checked')) {
@@ -104,6 +117,16 @@
     Formset.prototype.hasMaxForms = function() {
         var maxForms = parseInt(this.managementForm('MAX_NUM_FORMS').val(), 10) || 1000;
         return this.activeFormCount() >= maxForms
+    };
+
+    Formset.prototype.checkMaxForms = function() {
+        if (this.hasMaxForms()) {
+            this.$formset.addClass(this.opts.hasMaxFormsClass);
+            this.$add.attr('disabled', 'disabled');
+        } else {
+            this.$formset.removeClass(this.opts.hasMaxFormsClass);
+            this.$add.removeAttr('disabled');
+        }
     };
 
     Formset.getOrCreate = function(el, options) {
