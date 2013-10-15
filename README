@@ -10,7 +10,7 @@ Install via pip::
 
     pip install django-formset-js
 
-Then add it and its dependancies ``django-jquery-js``
+Then add it and its dependancy ``django-jquery-js``
 to your ``INSTALLED_APPS``::
 
     INSTALLED_APPS += (
@@ -22,37 +22,38 @@ to your ``INSTALLED_APPS``::
 Using
 -----
 
-Include the ``djangoformsetjs.utils.formset_media_js`` files in your form Media,
-and render it on the page::
+### Include the JavaScript library
 
-    from djangoformsetsjs.utils import formset_media_js
+Both jQuery and this library must be included in your page.
+The simplest way to do this is to add the scripts as media dependencies on your form::
+
+    from djangoformsetjs.utils import formset_media_js
 
     class MyForm(forms.Form):
         class Media(object):
             js = formset_media_js + (
-                # Your form media here
+                # Other form media here
             )
 
     MyFormSet = formset_factory(MyForm)
 
-To activate it in the page, you must include the Media of the form::
+And then include the Media of the form in your template::
 
-    {% block extra_script %}
-        {{ form.media }}
-    {% endblock %}
+    {{ formset.media }}
 
-Alternatively, simply add the script tag::
+Alternatively, simply add the script tags::
 
+    <script src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
 
-Then render your formset.
-Certain blocks of your formset need to be marked up
-so the formset library can find them.
-Note the ``data-formset-...`` attributes in the code below::
+## Render the formset
+
+So that the library can work with your formset,
+certain blocks of your formset need to be marked up with ``data-formset-...`` attributes::
 
     {% load formset_tags %}
 
-    <div id="#formset" data-formset-prefix="{{ formset.prefix }}">
+    <div id="formset" data-formset-prefix="{{ formset.prefix }}">
         {{ formset.management_form }}
 
         <div data-formset-body>
@@ -72,8 +73,9 @@ Note the ``data-formset-...`` attributes in the code below::
             {% escapescript %}
                 <div data-formset-form>
                     {{ formset.empty_form }}
+                    <a data-formset-delete-button>Delete form</a>
                 </div>
-            {% escapescript %}
+            {% endescapescript %}
         </script>
 
         <!-- This button will add a new form when clicked -->
@@ -85,7 +87,7 @@ Note the ``data-formset-...`` attributes in the code below::
 
     </div>
 
-The data attributes are as follows:
+The ``data-formset-`` data attributes are:
 
 ``data-formset-prefix``
   The value of ``{{ formset.prefix }}``.
@@ -105,9 +107,9 @@ The data attributes are as follows:
 ``data-formset-delete-button``
   A button that deletes that form.
 
-The empty form template is wrapped in a ``<script>``
-to stop any JavaScript attached to widgets from running upon page load,
-and to make finding and replacing the ``__prefix__`` placeholder easier.
+The empty form template is wrapped in a ``<script>`` as plain text.
+This stops any JavaScript attached to widgets from running upon page load,
+and makes finding and replacing the ``__prefix__`` placeholder easier.
 The contents of the ``<script>`` should be wrapped in a ``{% escapescript %}`` block
 to prevent any script tags inside from closing the wrapping script tag prematurely.
 
@@ -125,3 +127,9 @@ The delete button is identified by the ``data-formset-delete-button`` attribute:
             <a data-formset-delete-button>Delete form</a>
         </div>
     {% endfor %}
+
+Example
+-------
+
+A minimal example project is provided in the ``example/`` directory.
+Read ``example/README`` for more information

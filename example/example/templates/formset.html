@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Django Formset JS example</title>
+
+{{ formset.media }}
+
+</head>
+<body>
+    <form action="." method="post">{% csrf_token %}
+
+    {% load formset_tags %}
+
+    <div id="formset" data-formset-prefix="{{ formset.prefix }}">
+        {{ formset.management_form }}
+
+        <div data-formset-body>
+            <!-- New forms will be inserted in here -->
+            {% for form in formset %}
+                <div data-formset-form>
+                    {{ form }}
+                    <a data-formset-delete-button>Delete form</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- The empty form template. By wrapping this in a <script> tag, the
+        __prefix__ placeholder can easily be replaced in both attributes and
+        any scripts -->
+        <script type="form-template" data-formset-empty-form>
+            {% escapescript %}
+                <div data-formset-form>
+                    {{ formset.empty_form }}
+                    <a data-formset-delete-button>Delete form</a>
+                </div>
+            {% endescapescript %}
+        </script>
+
+        <!-- This button will add a new form when clicked -->
+        <input type="button" value="Add another" data-formset-add>
+
+        <script>jQuery(function($) {
+            $("#formset").formset();
+        });</script>
+
+    </div>
+
+    <button type="submit">Submit</button>
+
+    </form>
+</body>
+</html>
