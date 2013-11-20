@@ -20,7 +20,7 @@
             {% for form in formset %}
                 <div data-formset-form>
                     {{ form }}
-                    <a data-formset-delete-button>Delete form</a>
+                    <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endfor %}
         </div>
@@ -32,7 +32,7 @@
             {% escapescript %}
                 <div data-formset-form>
                     {{ formset.empty_form }}
-                    <a data-formset-delete-button>Delete form</a>
+                    <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endescapescript %}
         </script>
