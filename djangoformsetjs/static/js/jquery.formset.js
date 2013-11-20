@@ -62,7 +62,7 @@
             .replace(new RegExp('__prefix__', 'g'), newIndex)
             .replace(new RegExp('<\\\\/script>', 'g'), '</script>');
 
-        var $newForm = $(newFormHtml);
+        var $newForm = $($.parseHTML(newFormHtml, this.$body.document, true));
         this.$body.append($newForm);
         this.bindForm($newForm, newIndex);
         $newForm.slideUp(0);
