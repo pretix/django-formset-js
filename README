@@ -22,7 +22,8 @@ to your ``INSTALLED_APPS``::
 Using
 -----
 
-### Include the JavaScript library
+Include the JavaScript library
+******************************
 
 Both jQuery and this library must be included in your page.
 The simplest way to do this is to add the scripts as media dependencies on your form::
@@ -46,7 +47,8 @@ Alternatively, simply add the script tags::
     <script src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
 
-## Render the formset
+Render the formset
+******************
 
 So that the library can work with your formset,
 certain blocks of your formset need to be marked up with ``data-formset-...`` attributes::
@@ -61,7 +63,7 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
             {% for form in formset %}
                 <div data-formset-form>
                     {{ form }}
-                    <a data-formset-delete-button>Delete form</a>
+                    <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endfor %}
         </div>
@@ -73,7 +75,7 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
             {% escapescript %}
                 <div data-formset-form>
                     {{ formset.empty_form }}
-                    <a data-formset-delete-button>Delete form</a>
+                    <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endescapescript %}
         </script>
@@ -82,7 +84,9 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
         <input type="button" value="Add another" data-formset-add>
 
         <script>jQuery(function($) {
-            $("#formset").formset();
+            $("#formset").formset({
+                animateForms: true
+            });
         });</script>
 
     </div>
@@ -96,6 +100,9 @@ The ``data-formset-`` data attributes are:
 ``data-formset-body``
   This indicates where all the child forms are.
   New forms are inserted in here.
+
+``data-formset-form``
+  Every form (including the empty form) should have this attribute.
 
 ``data-formset-empty-form``
   The element that contains the empty form template.
@@ -113,8 +120,19 @@ and makes finding and replacing the ``__prefix__`` placeholder easier.
 The contents of the ``<script>`` should be wrapped in a ``{% escapescript %}`` block
 to prevent any script tags inside from closing the wrapping script tag prematurely.
 
+If the forms can be deleted, and contain a delete checkbox,
+the following actions occur:
+
+* When the checkbox is checked, marking the form for deletion,
+  the ``formDeleted`` event is fired on the ``data-formset-form`` container,
+  and the ``data-formset-form-deleted`` attribute is added.
+
+* When the checkbox is unchecked, marking the form as active again,
+  the ``formAdded`` event is fired on the ``data-formset-form`` container,
+  and the ``data-formset-form-deleted`` attribute is removed.
+
 If the forms can be deleted, and contain a delete button,
-the forms will be hidden from view when deleted.
+pressing the delete button will toggle the delete checkbox for that form.
 The ``DELETE`` field should be hidden if the delete button is used.
 The delete button is identified by the ``data-formset-delete-button`` attribute::
 
@@ -124,9 +142,47 @@ The delete button is identified by the ``data-formset-delete-button`` attribute:
             {{ form.age }}
 
             <div class="hidden">{{ form.DELETE }}</div>
-            <a data-formset-delete-button>Delete form</a>
+            <button type="button" data-formset-delete-button>Delete form</button>
         </div>
     {% endfor %}
+
+If the ``animateForms`` option is set when the formset is created,
+adding and deleting forms will be animated by sliding the forms in and out.
+
+Options
+*******
+
+The jQuery plugin takes the following options:
+
+``form``:
+  The selector to find forms.
+  Defaults to ``[data-formset-form]``.
+
+``emptyForm``:
+  The selector to find the empty form template.
+  Defaults to ``script[type=form-template][data-formset-empty-form]``.
+
+``body``:
+  The selector to find the formset body.
+  New forms will be inserted at the bottom of this element.
+  Defaults to ``[data-formset-body]``.
+
+``add``:
+  The selector to find the add button.
+  Defaults to ``[data-formset-add]``.
+``deleteButton``:
+  The selector to find the delete button within a form.
+  Defaults to ``[data-formset-delete-button]``.
+
+``hasMaxFormsClass``:
+  The class added to the formset when the maximum number of forms is reached.
+  The maximum number of forms is pulled from the management form.
+  Defaults to ``has-max-forms``.
+
+``animateForms``:
+  Whether to animate form addition/deletion.
+  Defaults to ``false``.
+
 
 Example
 -------
