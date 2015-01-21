@@ -120,6 +120,17 @@ and makes finding and replacing the ``__prefix__`` placeholder easier.
 The contents of the ``<script>`` should be wrapped in a ``{% escapescript %}`` block
 to prevent any script tags inside from closing the wrapping script tag prematurely.
 
+When the ``data-formset-add`` button is clicked, the ``formAdded`` event is
+fired on the form which was added. This event propagates upwards, and as such
+can be handled from the form container.
+For example, to select the new form added for form additions from the above
+example, bind as such::
+
+    $('#formset').on('formAdded', function(event) {
+        newForm = event.target;
+        //Do Stuff
+    });
+
 If the forms can be deleted, and contain a delete checkbox,
 the following actions occur:
 
