@@ -92,20 +92,20 @@
             if ($delete.is(':checked')) {
                 $form.attr('data-formset-form-deleted', '');
                 // Remove required property and pattern attribute to allow submit, back it up to data field
-                $form.find(':required').data(pluginName + 'required-field', true).prop('required', false);
+                $form.find(':required').data(pluginName + '-required-field', true).prop('required', false);
                 $form.find('input[pattern]').each(function() {
                     var pattern = $(this).attr('pattern');
-                    $(this).data(pluginName + 'field-pattern', pattern).removeAttr('pattern');
+                    $(this).data(pluginName + '-field-pattern', pattern).removeAttr('pattern');
                 });
                 $form.trigger('formDeleted');
             } else {
                 $form.removeAttr('data-formset-form-deleted');
                 // Restore required property and pattern attributes from data field
                 $form.find('*').filter(function() {
-                    return $(this).data(pluginName + 'required-field') === true;
+                    return $(this).data(pluginName + '-required-field') === true;
                 }).prop('required', true);
                 $form.find('input').each(function() {
-                    var pattern = $(this).data(pluginName + 'field-pattern');
+                    var pattern = $(this).data(pluginName + '-field-pattern');
                     if (pattern) {
                         $(this).attr('pattern', pattern);
                     }
