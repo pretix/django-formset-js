@@ -1,3 +1,7 @@
 *.egg-info
 dist/
 *.pyc
+*.min.js
+*.min.js.map
+node_modules
+MANIFEST

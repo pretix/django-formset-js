@@ -2,13 +2,50 @@
 """
 Install django-formset-js using setuptools
 """
+import os
+import subprocess
+import warnings
+
+from distutils.command.sdist import sdist
+from setuptools import setup, find_packages
 
 from djangoformsetjs import __version__
+
 
 with open('README') as f:
     readme = f.read()
 
-from setuptools import setup, find_packages
+
+class MinifyAndSdist(sdist):
+
+    source_js = 'djangoformsetjs/static/js/jquery.formset.js'
+    dest_js = 'djangoformsetjs/static/js/jquery.formset.min.js'
+    map_js = 'djangoformsetjs/static/js/jquery.formset.min.js'
+
+    def run(self):
+        self.minify_js()
+        sdist.run(self)
+
+    def minify_js(self):
+        map_js = self.dest_js + '.map'
+        uglifyjs = './node_modules/.bin/uglifyjs'
+        if os.path.exists(uglifyjs):
+            try:
+                subprocess.check_call([
+                    uglifyjs, self.source_js,
+                    '-o', self.dest_js,
+                    '--source-map', map_js,
+                    '--source-map-url', os.path.basename(map_js),
+                    '-p', 'relative'])
+            except subprocess.CalledProcessError:
+                raise SystemExit(1)
+        else:
+            warnings.warn("uglify-js not found, can not minify JavaScript")
+            self.copy_js()
+
+    def copy_js(self):
+        import shutil
+        shutil.copy(self.source_js, self.dest_js)
 
 setup(
     name='django-formset-js',
@@ -25,7 +62,7 @@ setup(
     packages=find_packages(),
 
     include_package_data=True,
-    package_data={ },
+    package_data={},
 
     classifiers=[
         'Environment :: Web Environment',
@@ -36,4 +73,7 @@ setup(
         'License :: OSI Approved :: BSD License',
     ],
     license='BSD',
+    cmdclass={
+        'sdist': MinifyAndSdist,
+    },
 )

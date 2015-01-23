@@ -200,3 +200,12 @@ Example
 
 A minimal example project is provided in the ``example/`` directory.
 Read ``example/README`` for more information
+
+Developing
+----------
+
+When running ``./setup.py sdist``, the JavaScript asset is minified using
+UglifyJS if it is installed. To install UglifyJS, install node.js and npm, and
+run::
+
+    npm install uglifyjs
