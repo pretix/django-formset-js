@@ -60,6 +60,7 @@
         hasMaxFormsClass: 'has-max-forms',
         animateForms: false,
         reorderMode: 'none',
+        empty_prefix: '__prefix__'
     };
 
     Formset.prototype.addForm = function() {
@@ -72,7 +73,7 @@
         this.$managementForm('TOTAL_FORMS').val(newIndex + 1);
 
         var newFormHtml = this.$emptyForm.html()
-            .replace(new RegExp('__prefix__', 'g'), newIndex)
+            .replace(new RegExp(this.opts.empty_prefix, 'g'), newIndex)
             .replace(new RegExp('<\\\\/script>', 'g'), '</script>');
 
         var $newFormFragment = $($.parseHTML(newFormHtml, this.$body.document, true));
@@ -304,6 +305,7 @@
             this.$formset.removeClass(this.opts.hasMaxFormsClass);
             this.$add.removeAttr('disabled');
         }
+        return false;
     };
 
     Formset.prototype.animateForms = function() {
@@ -311,9 +313,11 @@
             var $form = $(this);
             $form.slideUp(0);
             $form.slideDown();
+            return false;
         }).on('formDeleted', this.opts.form, function() {
             var $form = $(this);
             $form.slideUp();
+            return false;
         });
         this.$forms().filter('[data-formset-form-deleted]').slideUp(0);
     };

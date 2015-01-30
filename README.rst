@@ -305,6 +305,10 @@ All the methods and attributes listed below operate on a ``Formset`` instance.
     and set the relevant classes on the ``Formset`` element
     if the ``Formset`` has reached its limit.
 
+``empty_prefix``:
+  The prefix placeholder your formset uses for the empty form. This is only
+  needed when you subclass FormSet to change this and defaults to ``__prefix__``.
+
 
 Example
 -------
