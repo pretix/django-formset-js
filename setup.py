@@ -87,5 +87,6 @@ setup(
     license='BSD',
     cmdclass={
         'sdist': MinifyAndSdist,
+        'minify': MinifyCommand,
     },
 )

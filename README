@@ -209,3 +209,7 @@ UglifyJS if it is installed. To install UglifyJS, install node.js and npm, and
 run::
 
     npm install uglifyjs
+
+You can minify the scripts manually using::
+
+    ./setup.py minify
