@@ -6,7 +6,8 @@ import os
 import subprocess
 import warnings
 
-from distutils.command.sdist import sdist
+from distutils.core import Command
+from setuptools.command.sdist import sdist
 from setuptools import setup, find_packages
 
 from djangoformsetjs import __version__
@@ -16,15 +17,18 @@ with open('README') as f:
     readme = f.read()
 
 
-class MinifyAndSdist(sdist):
+class MinifyCommand(Command):
 
     source_js = 'djangoformsetjs/static/js/jquery.formset.js'
     dest_js = 'djangoformsetjs/static/js/jquery.formset.min.js'
-    map_js = 'djangoformsetjs/static/js/jquery.formset.min.js'
 
-    def run(self):
-        self.minify_js()
-        sdist.run(self)
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
 
     def minify_js(self):
         map_js = self.dest_js + '.map'
@@ -46,6 +50,14 @@ class MinifyAndSdist(sdist):
     def copy_js(self):
         import shutil
         shutil.copy(self.source_js, self.dest_js)
+
+    def run(self):
+        self.minify_js()
+
+
+class MinifyAndSdist(sdist):
+    sub_commands = sdist.sub_commands + [('minify', None)]
+
 
 setup(
     name='django-formset-js',
