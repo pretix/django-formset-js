@@ -14,7 +14,7 @@ class MyForm(forms.Form):
         )
 
 
-MyFormSet = formset_factory(MyForm)
+MyFormSet = formset_factory(MyForm, can_delete=True)
 
 
 def formset_view(request):
