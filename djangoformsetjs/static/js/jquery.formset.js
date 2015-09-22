@@ -87,8 +87,7 @@
 
         var $delete = $form.find('[name=' + prefix + '-DELETE]');
 
-        // Trigger `formAdded` / `formDeleted` events when delete checkbox value changes
-        $delete.change(function(event) {
+        var onChangeDelete = function() {
             if ($delete.is(':checked')) {
                 $form.attr('data-formset-form-deleted', '');
                 // Remove required property and pattern attribute to allow submit, back it up to data field
@@ -112,10 +111,20 @@
                 });
                 $form.trigger('formAdded');
             }
-        }).trigger('change');
+        }
 
+        // Trigger `formAdded` / `formDeleted` events when delete checkbox value changes
+        $delete.change(onChangeDelete);
+
+        // This will trigger `formAdded` for newly created forms.
+        // It will also trigger `formAdded` or `formDeleted` for all forms when
+        // the Formset is first created.
+        // setTimeout so the caller can register events before the events are
+        // triggered, during initialisation.
+        window.setTimeout(onChangeDelete);
+
+        // Delete the form if the delete button is pressed
         var $deleteButton = $form.find(this.opts.deleteButton);
-
         $deleteButton.bind('click', function() {
             $delete.attr('checked', true).change();
         });
