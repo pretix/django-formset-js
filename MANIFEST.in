@@ -1,2 +1,3 @@
 recursive-include djangoformsetjs/static *
 include LICENSE
+include README.rst
