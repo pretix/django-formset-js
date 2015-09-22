@@ -1,3 +1,4 @@
+=================
 django-formset-js
 =================
 
@@ -11,7 +12,9 @@ Install via pip::
     pip install django-formset-js
 
 Then add it and its dependancy ``django-jquery-js``
-to your ``INSTALLED_APPS``::
+to your ``INSTALLED_APPS``:
+
+.. code-block:: python
 
     INSTALLED_APPS += (
         'django.contrib.staticfiles',
@@ -26,7 +29,9 @@ Include the JavaScript library
 ******************************
 
 Both jQuery and this library must be included in your page.
-The simplest way to do this is to add the scripts as media dependencies on your form::
+The simplest way to do this is to add the scripts as media dependencies on your form:
+
+.. code-block:: python
 
     from djangoformsetjs.utils import formset_media_js
 
@@ -38,11 +43,15 @@ The simplest way to do this is to add the scripts as media dependencies on your 
 
     MyFormSet = formset_factory(MyForm)
 
-And then include the Media of the form in your template::
+And then include the Media of the form in your template:
+
+.. code-block:: html+django
 
     {{ formset.media }}
 
-Alternatively, simply add the script tags::
+Alternatively, simply add the script tags:
+
+.. code-block:: html+django
 
     <script src="{{ STATIC_URL }}js/jquery.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.formset.js"></script>
@@ -51,7 +60,9 @@ Render the formset
 ******************
 
 So that the library can work with your formset,
-certain blocks of your formset need to be marked up with ``data-formset-...`` attributes::
+certain blocks of your formset need to be marked up with ``data-formset-...`` attributes:
+
+.. code-block:: html+django
 
     {% load formset_tags %}
 
@@ -124,7 +135,9 @@ When the ``data-formset-add`` button is clicked, the ``formAdded`` event is
 fired on the form which was added. This event propagates upwards, and as such
 can be handled from the form container.
 For example, to select the new form added for form additions from the above
-example, bind as such::
+example, bind as such:
+
+.. code-block:: javascript
 
     $('#formset').on('formAdded', function(event) {
         newForm = event.target;
@@ -145,7 +158,9 @@ the following actions occur:
 If the forms can be deleted, and contain a delete button,
 pressing the delete button will toggle the delete checkbox for that form.
 The ``DELETE`` field should be hidden if the delete button is used.
-The delete button is identified by the ``data-formset-delete-button`` attribute::
+The delete button is identified by the ``data-formset-delete-button`` attribute:
+
+.. code-block:: html+django
 
     {% for form in formset %}
         <div data-formset-form>
