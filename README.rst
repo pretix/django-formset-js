@@ -209,6 +209,69 @@ The jQuery plugin takes the following options:
   Whether to animate form addition/deletion.
   Defaults to ``false``.
 
+Javascript API
+--------------
+
+If the bundled functionality is not for you,
+you can interact with the formset using the JavaScript API.
+All the behaviour is driven by a ``Formset`` class.
+To get a ``Formset`` for an element, call:
+
+.. code-block:: javascript
+
+    var formset = $('#my-form').formset('getOrCreate');
+
+This can be called multiple times on a single element,
+and will always return the same ``Formset`` instance.
+All the methods and attributes listed below operate on a ``Formset`` instance.
+
+``Formset.opts``
+    The options used to create this ``Formset``.
+
+``Formset.$formset``
+    The element the ``Formset`` was created for.
+
+``Formset.$emptyForm``
+    The empty form template used to create new forms.
+
+``Formset.$body``
+    The element where new forms are created.
+
+``Formset.$add``
+    The button used to add new forms.
+
+``Formset.addForm()``
+    Add a form to the ``Formset``.
+    If the maximum number of forms would be exceeded if another form was added,
+    an error will be thrown.
+
+``Formset.$forms()``
+    Get a jQuery object of all the forms in the ``Formset``.
+
+``Formset.$managementForm(field)``
+    Get a jQuery object for the management form field ``field``:
+
+    .. code-block:: javascript
+
+        // Update the TOTAL_FORMS management form field
+        this.$managementForm('TOTAL_FORMS').val(10);
+
+``Formset.totalFormCount()``
+    Count the total number of forms in the ``Formset``, including deleted forms.
+
+``Formset.activeFormCount()``
+    Count the total number of active (not deleted) forms in the ``Formset``.
+
+``Formset.deletedFormCount()``
+    Count the number of deleted forms in the ``Formset``.
+
+``Formset.hasMaxForms()``
+    Return true if the ``Formset`` has its maximum number of forms.
+
+``Formset.checkMaxForms()``
+    Check how many forms are in the ``Formset``,
+    and set the relevant classes on the ``Formset`` element
+    if the ``Formset`` has reached its limit.
 
 Example
 -------
