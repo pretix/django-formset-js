@@ -1,0 +1,7 @@
+<div data-formset-form>
+    Foo: {{ form.foo }}
+    {% if form.DELETE %}
+        {{ form.DELETE }}
+        <button type="button" data-formset-delete-button>Delete form</button>
+    {% endif %}
+</div>

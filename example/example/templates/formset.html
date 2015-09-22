@@ -18,10 +18,7 @@
         <div data-formset-body>
             <!-- New forms will be inserted in here -->
             {% for form in formset %}
-                <div data-formset-form>
-                    {{ form }}
-                    <button type="button" data-formset-delete-button>Delete form</button>
-                </div>
+                {% include "form.html" with form=form only %}
             {% endfor %}
         </div>
 
@@ -30,11 +27,7 @@
         any scripts -->
         <script type="form-template" data-formset-empty-form>
             {% escapescript %}
-                <div data-formset-form>
-                    {{ formset.empty_form.foo }}
-                    {{ formset.empty_form.DELETE }}
-                    <button type="button" data-formset-delete-button>Delete form</button>
-                </div>
+                {% include "form.html" with form=formset.empty_form only %}
             {% endescapescript %}
         </script>
 
