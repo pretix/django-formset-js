@@ -31,7 +31,8 @@
         <script type="form-template" data-formset-empty-form>
             {% escapescript %}
                 <div data-formset-form>
-                    {{ formset.empty_form }}
+                    {{ formset.empty_form.foo }}
+                    {{ formset.empty_form.DELETE }}
                     <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endescapescript %}
@@ -41,7 +42,11 @@
         <input type="button" value="Add another" data-formset-add>
 
         <script>jQuery(function($) {
-            $("#formset").formset();
+            $("#formset").formset().on('formAdded', function() {
+                console.log("Form added", this, arguments);
+            }).on('formDeleted', function() {
+                console.log("Form deleted", this, arguments);
+            });
         });</script>
 
     </div>
