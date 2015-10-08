@@ -4,4 +4,9 @@
         {{ form.DELETE }}
         <button type="button" data-formset-delete-button>Delete form</button>
     {% endif %}
+    {% if form.ORDER %}
+        {{ form.ORDER }}
+		<button type="button" data-formset-move-up-button>Move up</button>
+		<button type="button" data-formset-move-down-button>Move down</button>
+	{% endif %}
 </div>

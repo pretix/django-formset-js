@@ -35,7 +35,10 @@
         <input type="button" value="Add another" data-formset-add>
 
         <script>jQuery(function($) {
-            $("#formset").formset().on('formAdded', function() {
+            $("#formset").formset({
+				'animateForms': true,
+				'reorderMode': 'animate'
+			}).on('formAdded', function() {
                 console.log("Form added", this, arguments);
             }).on('formDeleted', function() {
                 console.log("Form deleted", this, arguments);

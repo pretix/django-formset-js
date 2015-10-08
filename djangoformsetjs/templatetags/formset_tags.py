@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from django.template import Library, Node
 
 register = Library()
@@ -12,7 +13,7 @@ class EscapeScriptNode(Node):
 
     def render(self, context):
         out = self.nodelist.render(context)
-        escaped_out = out.replace(u'</script>', u'<\\/script>')
+        escaped_out = out.replace('</script>', '<\\/script>')
         return escaped_out
 
 

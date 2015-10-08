@@ -35,6 +35,9 @@
             _this.bindForm($(this), i);
         });
 
+        // Fill "ORDER" fields with the current order
+        this.prefillOrder();
+
         // Store a reference to this in the formset element
         this.$formset.data(pluginName, this);
 
@@ -52,8 +55,11 @@
         body: '[data-formset-body]',
         add: '[data-formset-add]',
         deleteButton: '[data-formset-delete-button]',
+        moveUpButton: '[data-formset-move-up-button]',
+        moveDownButton: '[data-formset-move-down-button]',
         hasMaxFormsClass: 'has-max-forms',
-        animateForms: false
+        animateForms: false,
+        reorderMode: 'none',
     };
 
     Formset.prototype.addForm = function() {
@@ -75,6 +81,9 @@
         var $newForm = $newFormFragment.filter(this.opts.form);
         this.bindForm($newForm, newIndex);
 
+        var prefix = this.formsetPrefix + '-' + newIndex;
+        $newForm.find('[name=' + prefix + '-ORDER]').val(newIndex);
+        
         return $newForm;
     };
 
@@ -82,10 +91,13 @@
     * Attach any events needed to a new form
     */
     Formset.prototype.bindForm = function($form, index) {
+        var _this = this;
+
         var prefix = this.formsetPrefix + '-' + index;
         $form.data(pluginName + '__formPrefix', prefix);
 
         var $delete = $form.find('[name=' + prefix + '-DELETE]');
+        var $order = $form.find('[name=' + prefix + '-ORDER]');
 
         var onChangeDelete = function() {
             if ($delete.is(':checked')) {
@@ -128,11 +140,141 @@
         $deleteButton.bind('click', function() {
             $delete.attr('checked', true).change();
         });
+
+        $order.change(function(event) {
+            _this.reorderForms();
+        });
+        
+        var $moveUpButton = $form.find(this.opts.moveUpButton);
+
+        $moveUpButton.bind('click', function() {
+            // Find the closest form with an ORDER value lower
+            // than ours
+            var current = $order.val();
+            var $nextOrder = null;
+            _this.$activeForms().each(function(i, form) {
+                var $o = $(form).find('[name*=ORDER]');
+                var order = parseInt($o.val());
+                if(order < current && ($nextOrder == null || order > parseInt($nextOrder.val()))) {
+                    $nextOrder = $o;
+                }
+            });
+
+            // Swap the order values
+            if($nextOrder != null) {
+                // Swap the order values
+                $order.val($nextOrder.val());
+                $nextOrder.val(current);
+            }
+
+            _this.reorderForms();
+        });
+
+        var $moveDownButton = $form.find(this.opts.moveDownButton);
+
+        $moveDownButton.bind('click', function() {
+            // Find the closest form with an ORDER value higher
+            // than ours
+            var current = $order.val();
+            var $nextOrder = null;
+            _this.$activeForms().each(function(i, form) {
+                var $o = $(form).find('[name*=ORDER]');
+                var order = parseInt($o.val());
+                if (order > current && ($nextOrder == null || order < parseInt($nextOrder.val()))) {
+                    $nextOrder = $o;
+                }
+            });
+
+            // Swap the order values
+            if($nextOrder != null) {
+                $order.val($nextOrder.val());
+                $nextOrder.val(current);
+            }
+
+            _this.reorderForms();
+        });
     };
+
+    /**
+     * Enumerate the forms and fill numbers into their ORDER input
+     * fields, if present.
+     */
+    Formset.prototype.prefillOrder = function() {
+        var _this = this;
+       this.$forms().each(function(i, form) {
+            var prefix = _this.formsetPrefix + '-' + i;
+            var $order = $(form).find('[name=' + prefix + '-ORDER]');
+            $order.val(i);
+        });
+    }
+
+    /**
+     * Enumerate the forms and fill numbers into their ORDER input
+     * fields, if present.
+     */
+    Formset.prototype.reorderForms = function() {
+        var _this = this;
+
+        var compareForms = function(form_a, form_b) {
+            /**
+             * Compare two forms based on their ORDER input value.
+             */
+            var a = parseInt($(form_a).find('[name*=-ORDER]').val());
+            var b = parseInt($(form_b).find('[name*=-ORDER]').val());
+            return (a < b ? -1 : (a > b ? 1 : 0));
+        }
+        var $forms = this.$activeForms().sort(compareForms);
+
+        if (this.opts.reorderMode == 'dom') {
+            $forms.reverse().each(function(i, form) {
+                // Move the forms to the top of $body, one by one
+                _this.$body.prepend($(form));
+            });
+        } else if (this.opts.reorderMode == 'animate') {
+            var accumulatedHeight = 0;
+
+            // Setup the CSS
+            if (this.$body.css("position") != "relative") {
+                this.$body.css("position", "relative");
+                this.$activeForms().each(function(i, form) {
+                    $(form).css("position", "absolute");
+                    $(form).css("top", accumulatedHeight + "px");
+                    accumulatedHeight += $(form).outerHeight(true);
+                });
+                this.$body.css("height", accumulatedHeight + "px");
+                accumulatedHeight = 0;
+            }
+
+            // Do the animation
+            $forms.each(function(i, form) {
+                $(form).stop().animate({
+                    "top": accumulatedHeight + "px"
+                }, 1000);
+                accumulatedHeight += $(form).outerHeight(true);
+            });
+            this.$body.css("height", accumulatedHeight + "px");
+            
+            // Reset the CSS
+            window.setTimeout(function() {
+                $forms.reverse().each(function(i, form) {
+                    $(form).css("position", "static");
+                    // Move the forms to the top of $body, one by one
+                    _this.$body.prepend($(form));
+                });
+                _this.$body.css("position", "static");
+                _this.$body.css("height", "auto");
+            }, 1000);
+        }
+    }
 
     Formset.prototype.$forms = function() {
         return this.$body.find(this.opts.form);
     };
+
+    Formset.prototype.$activeForms = function() {
+        return this.$body.find(this.opts.form).not("[data-formset-form-deleted]");
+    };
+
     Formset.prototype.$managementForm = function(name) {
         return this.$formset.find('[name=' + this.formsetPrefix + '-' + name + ']');
     };
@@ -207,4 +349,9 @@
             throw new Error("Unknown function call " + fn + " for $.fn.formset");
         }
     };
+    
+    // Enable the array function 'reverse' for collections of jQuery
+    // elements by including the shortest jQuery plugin ever.
+    $.fn.reverse = [].reverse;
+
 })(jQuery);

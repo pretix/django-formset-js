@@ -74,6 +74,8 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
             {% for form in formset %}
                 <div data-formset-form>
                     {{ form }}
+                    <button type="button" data-formset-move-up-button>Move up</button>
+                    <button type="button" data-formset-move-down-button>Move down</button>
                     <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endfor %}
@@ -86,6 +88,8 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
             {% escapescript %}
                 <div data-formset-form>
                     {{ formset.empty_form }}
+                    <button type="button" data-formset-move-up-button>Move up</button>
+                    <button type="button" data-formset-move-down-button>Move down</button>
                     <button type="button" data-formset-delete-button>Delete form</button>
                 </div>
             {% endescapescript %}
@@ -96,7 +100,8 @@ certain blocks of your formset need to be marked up with ``data-formset-...`` at
 
         <script>jQuery(function($) {
             $("#formset").formset({
-                animateForms: true
+                animateForms: true,
+                reorderMode: 'dom',
             });
         });</script>
 
@@ -124,6 +129,12 @@ The ``data-formset-`` data attributes are:
 
 ``data-formset-delete-button``
   A button that deletes that form.
+
+``data-formset-move-up-button``
+  A button that moves that form one row up in a sortable formset.
+
+``data-formset-move-down-button``
+  A button that moves that form one row down in a sortable formset.
 
 The empty form template is wrapped in a ``<script>`` as plain text.
 This stops any JavaScript attached to widgets from running upon page load,
@@ -175,6 +186,22 @@ The delete button is identified by the ``data-formset-delete-button`` attribute:
 If the ``animateForms`` option is set when the formset is created,
 adding and deleting forms will be animated by sliding the forms in and out.
 
+If the forms can be ordered and contain a order input field, it is expected
+that the forms are in order on page load
+
+If the forms contain two ordering buttons, identified by ``data-formset-move-up-button``
+and ``data-formset-move-down-button``, those buttons modify the value in the
+order input field by swapping it's value with the closest lower or higher value.
+In this case, the ``ORDER`` field should be hidden.
+
+If the ``reorderMode`` option is set to ``dom``, the forms will change their places
+in the DOM each time one of the ``ORDER`` fields is being changed. If it is set to
+``animate``, they will be sliding onto their new places. **Attention**: The animated
+ordering feature has to make assumptions about your markup and CSS, e.g. that both your
+formset container (``data-formset-body``) and your form (``data-formset-form``) are ``div``
+elements and can be to ``position: relative``/``position: absolute`` for the the time of
+the animation without harm. *This might not work for you out of the box*.
+
 Options
 *******
 
@@ -196,6 +223,7 @@ The jQuery plugin takes the following options:
 ``add``:
   The selector to find the add button.
   Defaults to ``[data-formset-add]``.
+
 ``deleteButton``:
   The selector to find the delete button within a form.
   Defaults to ``[data-formset-delete-button]``.
@@ -207,6 +235,10 @@ The jQuery plugin takes the following options:
 
 ``animateForms``:
   Whether to animate form addition/deletion.
+
+``reorderMode``:
+  Can be ``none``, ``dom`` or ``animate``, see above for an explaination.
+  Defaults to ``none``.
   Defaults to ``false``.
 
 Javascript API
@@ -272,6 +304,7 @@ All the methods and attributes listed below operate on a ``Formset`` instance.
     Check how many forms are in the ``Formset``,
     and set the relevant classes on the ``Formset`` element
     if the ``Formset`` has reached its limit.
+
 
 Example
 -------
