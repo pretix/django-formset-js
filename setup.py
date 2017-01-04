@@ -60,13 +60,13 @@ class MinifyAndSdist(sdist):
 
 
 setup(
-    name='django-formset-js',
+    name='django-formset-js-improved',
     version=__version__,
     description='Extend Django formsets with JavaScript',
     long_description=readme,
-    author='Tim Heap',
-    author_email='tim@timheap.me',
-    url='https://bitbucket.org/tim_heap/django-formset-js',
+    author='Raphael Michel',
+    author_email='mail@raphaelmichel.de',
+    url='https://github.com/pretix/django-formset-js',
 
     install_requires=['Django', 'django-jquery-js'],
     zip_safe=False,

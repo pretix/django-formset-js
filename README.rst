@@ -1,6 +1,12 @@
-=================
-django-formset-js
-=================
+==========================
+django-formset-js-improved
+==========================
+
+**This is a fork of django-formset-js that adds support for reordering and nested formsets.**
+
+The fork was done because the original author (Tim Heap) did not get around merging my PRs and I 
+need this to be on PyPI so I can depend on it. Please don't expect this fork to be permanently
+maintained.
 
 A wrapper for a JavaScript formset helper.
 
