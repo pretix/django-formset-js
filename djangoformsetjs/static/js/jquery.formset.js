@@ -236,13 +236,13 @@
 
             // Setup the CSS
             if (this.$body.css("position") != "relative") {
+                this.$body.css("height", this.$body.outerHeight(true) + "px");
                 this.$body.css("position", "relative");
                 this.$activeForms().each(function(i, form) {
                     $(form).css("position", "absolute");
                     $(form).css("top", accumulatedHeight + "px");
                     accumulatedHeight += $(form).outerHeight(true);
                 });
-                this.$body.css("height", accumulatedHeight + "px");
                 accumulatedHeight = 0;
             }
 
