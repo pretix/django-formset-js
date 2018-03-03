@@ -84,6 +84,7 @@
 
         var prefix = this.formsetPrefix + '-' + newIndex;
         $newForm.find('[name=' + prefix + '-ORDER]').val(newIndex);
+        $newForm.attr("data-formset-created-at-runtime", "true");
         
         return $newForm;
     };
@@ -311,8 +312,10 @@
     Formset.prototype.animateForms = function() {
         this.$formset.on('formAdded', this.opts.form, function() {
             var $form = $(this);
-            $form.slideUp(0);
-            $form.slideDown();
+            if ($form.attr("data-formset-created-at-runtime") == "true") {
+                $form.slideUp(0);
+                $form.slideDown();
+            }
             return false;
         }).on('formDeleted', this.opts.form, function() {
             var $form = $(this);
