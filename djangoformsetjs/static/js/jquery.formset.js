@@ -21,6 +21,7 @@
         this.$add = this.$formset.find(this.opts.add);
 
         this.formsetPrefix = $(el).data('formset-prefix');
+        this.deleteConfirmText = $(el).data('formset-delete-confirm-text');
 
         // Bind to the `Add form` button
         this.addForm = $.proxy(this, 'addForm');
@@ -139,8 +140,11 @@
 
         // Delete the form if the delete button is pressed
         var $deleteButton = $form.find(this.opts.deleteButton);
+        var deleteConfirmText = this.deleteConfirmText;
         $deleteButton.bind('click', function() {
-            $delete.attr('checked', true).change();
+            if(!deleteConfirmText || confirm(deleteConfirmText)) {
+                $delete.attr('checked', true).change();
+            }
         });
 
         $order.change(function(event) {
