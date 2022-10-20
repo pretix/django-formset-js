@@ -119,6 +119,10 @@ The ``data-formset-`` data attributes are:
   The value of ``{{ formset.prefix }}``.
   This is used to find the management form.
 
+``data-formset-delete-confirm-text``
+  A question to ask the user to confirm a click on the delete button,
+  e.g. "Do you really want to delete this entry?". Optional.
+
 ``data-formset-body``
   This indicates where all the child forms are.
   New forms are inserted in here.
