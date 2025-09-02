@@ -214,10 +214,6 @@
         });
     }
 
-    /**
-     * Enumerate the forms and fill numbers into their ORDER input
-     * fields, if present.
-     */
     Formset.prototype.reorderForms = function() {
         var _this = this;
 
