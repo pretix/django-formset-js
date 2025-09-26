@@ -210,14 +210,10 @@
        this.$forms().each(function(i, form) {
             var prefix = _this.formsetPrefix + '-' + i;
             var $order = $(form).find('[name=' + prefix + '-ORDER]');
-            $order.val(i);
+            $order.val(i + 1);
         });
     }
 
-    /**
-     * Enumerate the forms and fill numbers into their ORDER input
-     * fields, if present.
-     */
     Formset.prototype.reorderForms = function() {
         var _this = this;
 
