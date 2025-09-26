@@ -103,7 +103,7 @@
         var $order = $form.find('[name=' + prefix + '-ORDER]');
 
         var onChangeDelete = function() {
-            if ($delete.is(':checked')) {
+            if ($delete.prop("checked")) {
                 $form.attr('data-formset-form-deleted', '');
                 // Remove required property and pattern attribute to allow submit, back it up to data field
                 $form.find(':required').data(pluginName + '-required-field', true).prop('required', false);
