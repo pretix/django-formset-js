@@ -240,6 +240,7 @@
                 this.$body.css("height", this.$body.outerHeight(true) + "px");
                 this.$body.css("position", "relative");
                 this.$activeForms().each(function(i, form) {
+                    $(form).css("width", $(form).outerWidth(false) + "px");
                     $(form).css("position", "absolute");
                     $(form).css("top", accumulatedHeight + "px");
                     accumulatedHeight += $(form).outerHeight(true);
@@ -255,11 +256,12 @@
                 accumulatedHeight += $(form).outerHeight(true);
             });
             this.$body.css("height", accumulatedHeight + "px");
-            
+
             // Reset the CSS
             window.setTimeout(function() {
                 $forms.reverse().each(function(i, form) {
                     $(form).css("position", "static");
+                    $(form).css("width", "");
                     // Move the forms to the top of $body, one by one
                     _this.$body.prepend($(form));
                 });
