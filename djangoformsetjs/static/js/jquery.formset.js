@@ -84,7 +84,7 @@
         this.bindForm($newForm, newIndex);
 
         var prefix = this.formsetPrefix + '-' + newIndex;
-        $newForm.find('[name=' + prefix + '-ORDER]').val(newIndex);
+        $newForm.find('[name=' + prefix + '-ORDER]').val(newIndex + 1);
         $newForm.attr("data-formset-created-at-runtime", "true");
         
         return $newForm;
